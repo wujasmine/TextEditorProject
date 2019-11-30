@@ -1,0 +1,13 @@
+This is a test File.
+-n40
+-l
+-r  
+word yo.
+-b3 still a word
+yo.
+-p
+-p3 
+-p check
+-p3 check2.
+nice.
+eh
