@@ -425,7 +425,10 @@ public class Lexer {
 			line++;
 			lineFound = true;
 		}
-		while(!lineFound && !input.EndOfFile() && Character.isWhitespace(c)) {
+		else if(c == ' ') {
+			spaceFound = true;
+		}
+		while(!lineFound && !spaceFound && !input.EndOfFile() && Character.isWhitespace(c)) {
 			spaceFound = true;
 			c = input.GetChar();
 			if(c == '\n') {
