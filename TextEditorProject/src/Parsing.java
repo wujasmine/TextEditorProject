@@ -249,8 +249,15 @@ public class Parsing {
 			blanks = 0;
 		}
 		if (title) {
-			line = "\u0332" + line;
-			StringUtils.center(line, lineLength);
+			lineTemp = "";
+			for(int i = 0; i < line.length();i++) {
+				lineTemp += "-";//or whatever character we want to use
+			}
+			lineTemp = StringUtils.center(lineTemp, lineLength);
+			line = StringUtils.center(line, lineLength);
+			line += "\n" + lineTemp;
+			//line = "\u0332" + line;
+			//StringUtils.center(line, lineLength);
 		}
 		if (spacing) {
 			// does this work?
