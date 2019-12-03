@@ -93,7 +93,10 @@ public class Parsing {
 			} catch (NumberFormatException e) {
 				num = 0;
 			}
-			lineLength = num;
+			if(!columns) {
+				lineLength = num;
+			}
+			
 			break;
 		case LEFTJUST:
 			justification = 1;
@@ -158,6 +161,7 @@ public class Parsing {
 			}
 			else if(num == 2) {
 				columns = true;
+				Linelength = 35;
 			}
 			break;
 		default://error case
@@ -225,7 +229,7 @@ public class Parsing {
 				break;
 				// not too sure how to do equal justify?
 				case 3:
-				line = StringUtils.center(line, lineLength);
+				line = equalSpaces(line);
 				break;
 			}
 			//
@@ -255,6 +259,43 @@ public class Parsing {
 		} else {
 			line += '/n';
 		}
+	}
+	
+	private String equalSpaces(String str) {
+		int remainingSpace = lineLength - str.length();
+		String equalStr = str;
+		if(remainingSpace == 0) {
+			equalStr = str;
+		}
+		else {
+			int originalSpaces = 0;
+			char[] temp = str.toCharArray();
+			for(int i = 0; i < temp.length; i++) {
+				if(temp[i] == ' ') {
+					originalSpaces++;
+				}
+			}
+			int spaceLength = remainingSpace/originalSpaces;
+			int extraSpaces = remainingSpace%originalSpaces;
+			String spaceString = "";
+			for(int i = 0; i < spaceLength; i++) {
+				spaceString += " ";
+			}
+			int i = 0;
+			while(i < lineLength && i < equalStr.length()) {
+				if(equalStr.charAt(i) == ' ') {
+					equalStr = equalStr.substring(0,i) + spaceString + equalStr.substring(i+1, equalStr.length());
+					if(extraSpaces > 0) {
+						equalStr = equalStr.substring(0, i) + " " + equalStr.substring(i+1, equalStr.length());
+						extraSpaces--;
+						i++;
+					}
+					i += spaceLength;
+				}
+				i++;
+			}		
+		}
+		return equalStr;
 	}
 	
 }
