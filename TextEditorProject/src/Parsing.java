@@ -207,6 +207,52 @@ public class Parsing {
 		//still need logic for the various parameters like justification
 		//adding spaces for indents (line + "    " ...)
 		//need to figure out writing to two columns. Use an arraylist of strings?
+		
+		for (int i = 0; i < lineLength - 1; i++) {
+			switch (justification) {
+				// right justify
+				case 0:
+				StringUtils.rightPad(line, lineLength);
+				// append to output string
+				break;
+				// left justify
+				case 1:
+				//append to output string
+				break;
+				// center justify
+				case 2:
+				StringUtils.center(line, lineLength);
+				break;
+				// not too sure how to do equal justify?
+				case 3:
+				StringUtils.center(line, lineLength);
+				break;
+			}
+			//
+		}
+		if (indent > 0 && justification == 1) {
+			for (int i = 0; i < indent - 1; i++) {
+				line = " " + line;
+			}
+			indent = 0;
+		}
+		if (blanks > 0) {
+			for (int i = 0; i < blanks - 1; i++) {
+				line += '/n';
+			}
+			blanks = 0;
+		}
+		if (title) {
+			line = "\u0332" + line;
+			StringUtils.center(line, lineLength);
+		}
+		if (spacing) {
+			// does this work?
+			line += '/n';
+			line += '/n';
+		} else {
+			line += '/n';
+		}
 	}
 	
 }
