@@ -234,12 +234,14 @@ public class Parsing {
 			for (int i = 0; i < indent - 1; i++) {
 				line = " " + line;
 			}
+			// reset to 0 so next line won't also repeat command?
 			indent = 0;
 		}
 		if (blanks > 0) {
 			for (int i = 0; i < blanks - 1; i++) {
 				line += '/n';
 			}
+			// reset to 0 so next line won't also repeat command?
 			blanks = 0;
 		}
 		if (title) {
