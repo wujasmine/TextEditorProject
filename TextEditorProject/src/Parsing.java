@@ -61,7 +61,7 @@ public class Parsing {
 		temp = lex.GetToken();
 		while(temp.type != Lexer.TokenType.EOF) {
 			if(temp.type == Lexer.TokenType.NEWLINE) {
-				
+				//newline string
 			}
 			else if(temp.type != Lexer.TokenType.WORD) {
 				lex.UnGetToken(temp);
@@ -183,7 +183,30 @@ public class Parsing {
 	 * Writes word tokens into strings according to the formatting rules.
 	 */
 	public void buildLines() {
+		String line = "";
+		Lexer.Token currentWord;
+		boolean empty = false;
+		while(!wordBuffer.isEmpty()) {
+			currentWord = wordBuffer.remove(0);//pop from beginning of word buffer
+			
+			while((line.length() + currentWord.lexeme.length()) <= lineLength && !empty) {
+				line += currentWord.lexeme + " ";
+				
+				if(!wordBuffer.isEmpty()) {
+					currentWord = wordBuffer.remove(0);
+				}
+				else {
+					empty = true;
+				}
+				
+			}
+			line = line.substring(0, line.length()-2);//remove last space from above loop.
+		}
 		
+		//write the line
+		//still need logic for the various parameters like justification
+		//adding spaces for indents
+		//need to figure out writing to two columns. Use an arraylist of strings?
 	}
 	
 }
