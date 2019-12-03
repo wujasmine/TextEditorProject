@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.ArrayList;
+import org.apache.commons.lang3.StringUtils;
 /*
  * The meat of the program. Organizes the input into lines according to the
  * parameters given in the input file. Needs the input file and output file
@@ -212,20 +213,19 @@ public class Parsing {
 			switch (justification) {
 				// right justify
 				case 0:
-				StringUtils.rightPad(line, lineLength);
-				// append to output string
+				line = StringUtils.rightPad(line, lineLength);
 				break;
 				// left justify
 				case 1:
-				//append to output string
+				line = StringUtils.leftPad(line, lineLength);
 				break;
 				// center justify
 				case 2:
-				StringUtils.center(line, lineLength);
+				line = StringUtils.center(line, lineLength);
 				break;
 				// not too sure how to do equal justify?
 				case 3:
-				StringUtils.center(line, lineLength);
+				line = StringUtils.center(line, lineLength);
 				break;
 			}
 			//
