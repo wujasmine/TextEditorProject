@@ -205,7 +205,7 @@ public class Parsing {
 		
 		//write the line
 		//still need logic for the various parameters like justification
-		//adding spaces for indents
+		//adding spaces for indents (line + "    " ...)
 		//need to figure out writing to two columns. Use an arraylist of strings?
 	}
 	
