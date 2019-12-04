@@ -79,6 +79,12 @@ public class Parsing {
 			}
 			temp = lex.GetToken();
 		}
+		try {
+			out.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -289,7 +295,7 @@ public class Parsing {
 			}
 			System.out.println("Writeing line: " + line);
 			try {
-				out.write(line);
+				out.write(line,0,line.length());
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
