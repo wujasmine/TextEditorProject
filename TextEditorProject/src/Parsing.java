@@ -1,25 +1,25 @@
 import java.io.*;
 import java.util.ArrayList;
-import org.apache.commons.lang3.StringUtils;
+//import org.apache.commons.lang3.StringUtils;
 /*
  * The meat of the program. Organizes the input into lines according to the
  * parameters given in the input file. Needs the input file and output file
  * to write to. Need streams to output error messages to?
  */
 public class Parsing {
-	int lineLength = 80; //number of characters in a line
-	int justification = 1; //0-right, 1-left, 2-center, 3-equal
-	boolean wrap = false; //f-wrap off, t-wrap on
-	boolean spacing = false; //f-single space, t-double space
-	int indent = 0; //paragraph indent by the number of spaces
-	boolean columns = false; //f-one column, t-two columns
-	int blanks = 0; //used to hold the number of blank lines to be output
-	boolean title = false; //temporary marker to tell if next line is a title line
+	private int lineLength = 80; //number of characters in a line
+	private int justification = 1; //0-right, 1-left, 2-center, 3-equal
+	private boolean wrap = false; //f-wrap off, t-wrap on
+	private boolean spacing = false; //f-single space, t-double space
+	private int indent = 0; //paragraph indent by the number of spaces
+	private boolean columns = false; //f-one column, t-two columns
+	private int blanks = 0; //used to hold the number of blank lines to be output
+	private boolean title = false; //temporary marker to tell if next line is a title line
 	
-	BufferedWriter out;
-	Lexer lex;
-	ArrayList<Lexer.Token> wordBuffer = new ArrayList<Lexer.Token>();
-	ArrayList<String> lineBuffer = new ArrayList<String>();
+	private BufferedWriter out;
+	private Lexer lex;
+	private ArrayList<Lexer.Token> wordBuffer = new ArrayList<Lexer.Token>();
+	private ArrayList<String> lineBuffer = new ArrayList<String>();
 	
 	public Parsing() {
 		lex = new Lexer();
@@ -58,17 +58,21 @@ public class Parsing {
 	 * Main parser
 	 */
 	public void parseFile() {
+		System.out.println("Begin Parsing");
 		Lexer.Token temp;
 		temp = lex.GetToken();
 		while(temp.type != Lexer.TokenType.EOF) {
 			if(temp.type == Lexer.TokenType.NEWLINE) {
+				System.out.println("Parse newline");
 				//newline string
 			}
 			else if(temp.type != Lexer.TokenType.WORD) {
+				System.out.println("Parse command");
 				lex.UnGetToken(temp);
 				parseCommand();
 			}
 			else {
+				System.out.println("Parse Word");
 				lex.UnGetToken(temp);
 				parseWords();
 				buildLines();
@@ -161,7 +165,7 @@ public class Parsing {
 			}
 			else if(num == 2) {
 				columns = true;
-				Linelength = 35;
+				lineLength = 35;
 			}
 			break;
 		default://error case
@@ -175,26 +179,58 @@ public class Parsing {
 	public void parseWords() {
 		Lexer.Token temp;
 		temp = lex.GetToken();
+		//lex.UnGetToken(temp);
+		//String t2 = "";	//debug delete later
 		while(temp.type != Lexer.TokenType.EOF && temp.type != Lexer.TokenType.NEWLINE) {
-			wordBuffer.add(temp);
+			Lexer.Token temp2 = lex.new Token();	//work around for wierd arraylist behavior
+			temp2.lexeme = temp.lexeme;
+			temp2.type = temp.type;
+			//System.out.println("lexer getting token: " + temp.lexeme);
+			wordBuffer.add(temp2);
+			//t2 = wordBuffer.get(wordBuffer.size()-1).lexeme;
+			//System.out.println("WordBuf test: " + t2 + " " + wordBuffer.get(wordBuffer.size()-1).type + " " + wordBuffer.size());
+			//System.out.println("WordBuf test: " + wordBuffer.get(0).lexeme + " " + wordBuffer.get(0).type);
+
 			temp = lex.GetToken();
 		}
-		if(temp.type != Lexer.TokenType.NEWLINE) {
-			wordBuffer.add(temp);
-		}
+
+		//System.out.println("WordBuf size: " + wordBuffer.size());
+		
 	}
 	
 	/**
 	 * Writes word tokens into strings according to the formatting rules.
 	 */
 	public void buildLines() {
+		System.out.println("Buffer size: " + wordBuffer.size());
+
 		String line = "";
 		Lexer.Token currentWord;
 		boolean empty = false;
+		if (blanks > 0) {
+			for (int i = 0; i < blanks - 1; i++) {
+				line += '\n';
+			}
+			// reset to 0 so next line won't also repeat command?
+			blanks = 0;
+		}
+		if (indent > 0 && justification == 1) {
+			for (int i = 0; i < indent - 1; i++) {
+				line = " " + line;
+			}
+			// reset to 0 so next line won't also repeat command?
+			indent = 0;
+		}
+		
+		
 		while(!wordBuffer.isEmpty()) {
+			//System.out.println("WordBuf test: " + wordBuffer.get(0).lexeme + " " + wordBuffer.get(0).type + " " + wordBuffer.size());
+
 			currentWord = wordBuffer.remove(0);//pop from beginning of word buffer
-			
+			//System.out.println("Storing word: " + currentWord.lexeme + currentWord.type);
+			//System.out.println("outerloop size: " + wordBuffer.size());
 			while((line.length() + currentWord.lexeme.length()) <= lineLength && !empty) {
+				//System.out.println("Storing word: " + currentWord.lexeme);
 				line += currentWord.lexeme + " ";
 				
 				if(!wordBuffer.isEmpty()) {
@@ -205,7 +241,60 @@ public class Parsing {
 				}
 				
 			}
+			//System.out.println("Buffer size: " + wordBuffer.size());
 			line = line.substring(0, line.length()-2);//remove last space from above loop.
+			if (title) {
+				String lineTemp = "";
+				for(int i = 0; i < line.length();i++) {
+					lineTemp += "-";//or whatever character we want to use
+				}
+				int remaining = lineLength - line.length();
+				remaining = remaining / 2;
+				for(int i = 0; i < remaining; i++) {
+					lineTemp = " " + lineTemp;
+					line = " " + line;
+				}
+				line += "\n" + lineTemp;
+				//line = "\u0332" + line;
+				//StringUtils.center(line, lineLength);
+				title = false;
+			}
+			else if(justification == 0) {
+				int remaining = lineLength - line.length();
+				for(int i = 0; i < remaining; i++) {
+					line = " " + line;
+				}
+			}
+			else if(justification == 1) {
+				
+			}
+			else if(justification == 2) {
+				int remaining = lineLength - line.length();
+				remaining = remaining / 2;
+				for(int i = 0; i < remaining; i++) {
+					line = " " + line;
+				}
+			}
+			else if(justification == 3) {
+				line = equalSpaces(line);
+			}
+			
+			
+			if (spacing) {
+				// does this work?
+				line += "\n";
+				line += '\n';
+			} else {
+				line += '\n';
+			}
+			System.out.println("Writeing line: " + line);
+			try {
+				out.write(line);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			line = "";
 		}
 		
 		//write the line
@@ -213,59 +302,9 @@ public class Parsing {
 		//adding spaces for indents (line + "    " ...)
 		//need to figure out writing to two columns. Use an arraylist of strings?
 		
-		for (int i = 0; i < lineLength - 1; i++) {
-			switch (justification) {
-				// right justify
-				case 0:
-				line = StringUtils.rightPad(line, lineLength);
-				break;
-				// left justify
-				case 1:
-				line = StringUtils.leftPad(line, lineLength);
-				break;
-				// center justify
-				case 2:
-				line = StringUtils.center(line, lineLength);
-				break;
-				// not too sure how to do equal justify?
-				case 3:
-				line = equalSpaces(line);
-				break;
-			}
-			//
-		}
-		if (indent > 0 && justification == 1) {
-			for (int i = 0; i < indent - 1; i++) {
-				line = " " + line;
-			}
-			// reset to 0 so next line won't also repeat command?
-			indent = 0;
-		}
-		if (blanks > 0) {
-			for (int i = 0; i < blanks - 1; i++) {
-				line += '/n';
-			}
-			// reset to 0 so next line won't also repeat command?
-			blanks = 0;
-		}
-		if (title) {
-			lineTemp = "";
-			for(int i = 0; i < line.length();i++) {
-				lineTemp += "-";//or whatever character we want to use
-			}
-			lineTemp = StringUtils.center(lineTemp, lineLength);
-			line = StringUtils.center(line, lineLength);
-			line += "\n" + lineTemp;
-			//line = "\u0332" + line;
-			//StringUtils.center(line, lineLength);
-		}
-		if (spacing) {
-			// does this work?
-			line += '/n';
-			line += '/n';
-		} else {
-			line += '/n';
-		}
+		
+		
+		
 	}
 	
 	private String equalSpaces(String str) {
