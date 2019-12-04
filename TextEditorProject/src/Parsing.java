@@ -247,8 +247,12 @@ public class Parsing {
 				}
 				
 			}
+			if(!empty) {
+				wordBuffer.add(0,currentWord);
+			}
 			//System.out.println("Buffer size: " + wordBuffer.size());
-			line = line.substring(0, line.length()-2);//remove last space from above loop.
+			line = line.substring(0, line.length()-1);//remove last space from above loop.
+			
 			if (title) {
 				String lineTemp = "";
 				for(int i = 0; i < line.length();i++) {
@@ -327,25 +331,28 @@ public class Parsing {
 					originalSpaces++;
 				}
 			}
-			int spaceLength = remainingSpace/originalSpaces;
-			int extraSpaces = remainingSpace%originalSpaces;
-			String spaceString = "";
-			for(int i = 0; i < spaceLength; i++) {
-				spaceString += " ";
-			}
-			int i = 0;
-			while(i < lineLength && i < equalStr.length()) {
-				if(equalStr.charAt(i) == ' ') {
-					equalStr = equalStr.substring(0,i) + spaceString + equalStr.substring(i+1, equalStr.length());
-					if(extraSpaces > 0) {
-						equalStr = equalStr.substring(0, i) + " " + equalStr.substring(i+1, equalStr.length());
-						extraSpaces--;
-						i++;
-					}
-					i += spaceLength;
+			if(originalSpaces > 0) {
+				int spaceLength = remainingSpace/originalSpaces;
+				int extraSpaces = remainingSpace%originalSpaces;
+				String spaceString = "";
+				for(int i = 0; i < spaceLength; i++) {
+					spaceString += " ";
 				}
-				i++;
-			}		
+				int i = 0;
+				while(i < lineLength && i < equalStr.length()) {
+					if(equalStr.charAt(i) == ' ') {
+						equalStr = equalStr.substring(0,i+1) + spaceString + equalStr.substring(i+1, equalStr.length());
+						if(extraSpaces > 0) {
+							equalStr = equalStr.substring(0, i+1) + " " + equalStr.substring(i+1, equalStr.length());
+							extraSpaces--;
+							i++;
+						}
+						i += spaceLength;
+					}
+					i++;
+				}
+			}
+					
 		}
 		return equalStr;
 	}
