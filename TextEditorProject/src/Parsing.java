@@ -17,7 +17,7 @@ public class Parsing {
 	private boolean title = false; //temporary marker to tell if next line is a title line
 	
 	private BufferedWriter out;
-	private Lexer lex;
+	Lexer lex;
 	private ArrayList<Lexer.Token> wordBuffer = new ArrayList<Lexer.Token>();
 	private ArrayList<String> lineBuffer = new ArrayList<String>();
 	
@@ -58,21 +58,21 @@ public class Parsing {
 	 * Main parser
 	 */
 	public void parseFile() {
-		System.out.println("Begin Parsing");
+		//System.out.println("Begin Parsing");
 		Lexer.Token temp;
 		temp = lex.GetToken();
 		while(temp.type != Lexer.TokenType.EOF) {
 			if(temp.type == Lexer.TokenType.NEWLINE) {
-				System.out.println("Parse newline");
-				//newline string
+				//System.out.println("Parse newline");
+				
 			}
 			else if(temp.type != Lexer.TokenType.WORD) {
-				System.out.println("Parse command");
+				//System.out.println("Parse command");
 				lex.UnGetToken(temp);
 				parseCommand();
 			}
 			else {
-				System.out.println("Parse Word");
+				//System.out.println("Parse Word");
 				lex.UnGetToken(temp);
 				parseWords();
 				buildLines();
@@ -208,7 +208,7 @@ public class Parsing {
 	 * Writes word tokens into strings according to the formatting rules.
 	 */
 	public void buildLines() {
-		System.out.println("Buffer size: " + wordBuffer.size());
+		//System.out.println("Buffer size: " + wordBuffer.size());
 
 		String line = "";
 		Lexer.Token currentWord;
@@ -297,7 +297,7 @@ public class Parsing {
 			} else {
 				line += '\n';
 			}
-			System.out.println("Writeing line: " + line);
+			//System.out.println("Writeing line: " + line);
 			try {
 				out.write(line,0,line.length());
 			} catch (IOException e) {

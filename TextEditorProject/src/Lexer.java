@@ -47,11 +47,13 @@ public class Lexer {
 		
 	}
 	
-	InBuf input;
-	ArrayList<Token> TokBuffer = new ArrayList<Token>();
+	private InBuf input;
+	private ArrayList<Token> TokBuffer = new ArrayList<Token>();
 	
-	Token temp = new Token();
-	int line = 0;
+	private Token temp = new Token();
+	private int line = 0;
+	
+	public String errors = "";
 	
 	Lexer(){
 		input = new InBuf();
@@ -123,21 +125,26 @@ public class Lexer {
 							temp.type = TokenType.LINELENGTH;
 						}
 						else if(SpaceEncountered) {
+							errors += "ERROR: command must be on its own line. Command ignored.\n";
 							temp.type = TokenType.WORD;
 						}
 						else {
+							errors += "ERROR: command must be on its own line. Command ignored.\n";
 							ScanWord();
 						}
 							
 					}
 					else if(c == ' ') {
 						temp.type = TokenType.WORD;
+						errors += "ERROR: argument required for command -n#. Command ignored.\n";
 					}
 					else if(c == '\n') {
+						errors += "ERROR: argument required for command -n#. Command ignored.\n";
 						MakeNewLineToken(true);
 						temp.type = TokenType.WORD;
 					}
 					else {
+						errors += "ERROR: argument required for command -n#. Command ignored.\n";
 						ScanWord();
 					}
 					break;
@@ -181,6 +188,7 @@ public class Lexer {
 						}
 					}
 					else {
+						errors += "ERROR: argument required for command -w. Command ignored.\n";
 						input.UnGetChar(c);
 						ScanWord();
 					}
@@ -237,21 +245,26 @@ public class Lexer {
 							temp.type = TokenType.INDENT;
 						}
 						else if(SpaceEncountered) {
+							errors += "ERROR: command must be on its own line. Command ignored.\n";
 							temp.type = TokenType.WORD;
 						}
 						else {
+							errors += "ERROR: command must be on its own line. Command ignored.\n";
 							ScanWord();
 						}
 							
 					}
 					else if(c == ' ') {
+						errors += "ERROR: argument is required for -p#. Command ignored.\n";
 						temp.type = TokenType.WORD;
 					}
 					else if(c == '\n') {
+						errors += "ERROR: argument is required for -p#. Command ignored.\n";
 						MakeNewLineToken(true);
 						temp.type = TokenType.WORD;
 					}
 					else {
+						errors += "ERROR: invalid argument for -p#. Command ignored.\n";
 						ScanWord();
 					}
 					
@@ -270,21 +283,26 @@ public class Lexer {
 							temp.type = TokenType.BLANKLINES;
 						}
 						else if(SpaceEncountered) {
+							errors += "ERROR: command must be on its own line. Command ignored.\n";
 							temp.type = TokenType.WORD;
 						}
 						else {
+							errors += "ERROR: command must be on its own line. Command ignored.\n";
 							ScanWord();
 						}
 							
 					}
 					else if(c == ' ') {
+						errors += "ERROR: argument is required for -p#. Command ignored.\n";
 						temp.type = TokenType.WORD;
 					}
 					else if(c == '\n') {
+						errors += "ERROR: argument is required for -p#. Command ignored.\n";
 						MakeNewLineToken(true);
 						temp.type = TokenType.WORD;
 					}
 					else {
+						errors += "ERROR: invalid argument for -p#. Command ignored.\n";
 						ScanWord();
 					}
 					
@@ -305,6 +323,7 @@ public class Lexer {
 						}
 					}
 					else {
+						errors += "ERROR: invalid argument for command -a#. Command ignored.\n";
 						//error message
 						
 					}
@@ -443,6 +462,10 @@ public class Lexer {
 		}
 		else if(spaceFound) {
 			input.UnGetChar(' ');
+		}
+		
+		if(!lineFound) {
+			errors += "ERROR: command must be on its own line. Command ignored.\n";
 		}
 		
 		return lineFound;
