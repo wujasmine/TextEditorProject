@@ -297,6 +297,11 @@ public class Parsing {
 			} else {
 				line += '\n';
 			}
+			
+			if (wrap) {
+				line = line.replaceAll("\\s+", " ");
+			}
+			
 			//System.out.println("Writeing line: " + line);
 			try {
 				out.write(line,0,line.length());
